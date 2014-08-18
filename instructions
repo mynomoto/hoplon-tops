@@ -1,0 +1,22 @@
+Hi Marcelo,
+
+As we discussed, I've given some thought to an exercise.  We've done some boring chess related things in the past but I'm not happy with them and I don't think they play to your unique experience.  Let me know what you think of the following:
+
+Implement an example frontend component (not the TODOs example, please) with the following requirements:
+Must both take user input
+Communicate with a server
+Re-render optimistically based on user input, assuming a successful server response
+Re-render after receiving an unsuccessful response from the server
+Re-render based on a polling loop for new information from the server
+Reflect state changes in both DOM elements (e.g., update text) and CSS (e.g., change classes)
+The exercise is to build this component in any 2 of #{hoplon om reagent react}, and then visit to present the two implementations side by side and discuss pros and cons.
+
+If you are able to find something suitable to extract from your work in Hoplon, that would be permissible and encouraged.  Any research or opinions you bring regarding the frameworks you do not implement will still be interesting to talk about.   Bonus points for automated tests.
+
+Cheers,
+
+Edward
+
+PS: I'll give one silly example, but feel free to implement whatever you like that meets the above requirements.
+
+Poll the server every 10 seconds to get a new random string.  Display the most recent 10 strings in a div.  Allow the user to add a string, which is submitted to the server asynchronously.  Accept user input optimistically, but add a server-side validation rejecting strings longer than 6 characters (assume the frontend cannot predict this validation rule). Style user generated strings differently from server generated ones. If the server asynchronously rejects the user input, place a strike through it, but leave it in the list until it is naturally eliminated from "10 most recent" set.
