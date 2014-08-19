@@ -1,5 +1,6 @@
 (page "index.html"
   (:require
+    [clojure.string :as str]
     [hoplon-tops.rpc :as rpc]
     [hoplon.twitter.bootstrap]
     [tailrecursion.hoplon.reload :refer [reload-all]]))
@@ -25,11 +26,13 @@
             (span :class "input-group-btn"
               (button
                 :class "btn btn-primary"
-                :click #(do
-                          (swap! rpc/last-10 (fn [x] (conj (vec (take-last 9 x)) {:word @user-input
-                                                                                  :origin :local})))
+                :click #(when-not (str/blank? @user-input)
+                          (swap! rpc/last-10
+                            (fn [x] (conj (vec (take-last 9 x)) {:word @user-input
+                                                                 :origin :local})))
                           (rpc/submit-word @user-input)
-                          (reset! user-input "")) "Submit")))
+                          (reset! user-input ""))
+                "Submit")))
           (ul :class "list-group"
             (loop-tpl :bindings [{:keys [word origin invalid valid]} (cell= (reverse rpc/last-10))]
               (li
