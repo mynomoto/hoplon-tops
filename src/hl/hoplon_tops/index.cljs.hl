@@ -12,18 +12,20 @@
   (body
     (div
       (h1 "Hoplon Tops")
-      (input
-        :type "text"
-        :value user-input
-        :change #(reset! user-input @%))
-      (button
-        :click #(do
-                  (swap! rpc/last-10 (fn [x] (conj (vec (take-last 9 x)) [@user-input :local])))
-                  (rpc/submit-word @user-input)
-                  (reset! user-input "")) "Submit")
       (div
-        (loop-tpl :bindings [[m o] (cell= (reverse rpc/last-10))]
-          (p :class (cell= {:local (= o :local)
-                            :invalid (rpc/cummulative-input-error m)})
-            (text "~{m}"))))
+        (input
+          :type "text"
+          :value user-input
+          :change #(reset! user-input @%))
+        (button
+          :click #(do
+                    (swap! rpc/last-10 (fn [x] (conj (vec (take-last 9 x)) {:word @user-input
+                                                                            :origin :local})))
+                    (rpc/submit-word @user-input)
+                    (reset! user-input "")) "Submit"))
+      (div
+        (loop-tpl :bindings [{:keys [word origin invalid]} (cell= (reverse rpc/last-10))]
+          (p :class (cell= {:local (= origin :local)
+                            :invalid invalid})
+            (text "~{word}"))))
       (p (text "~{rpc/cummulative-input-error}")))))

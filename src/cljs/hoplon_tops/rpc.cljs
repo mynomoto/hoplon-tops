@@ -7,7 +7,9 @@
 
 (defc last-10 [])
 (defc= state (first (last last-10))
-  (fn [x] (swap! last-10 #(conj (vec (take-last 9 %)) [x :server]))))
+  (fn [x] (swap! last-10 #(conj (vec (take-last 9 %))
+                            {:word x
+                             :origin :server}))))
 (defc error nil)
 (defc loading [])
 
@@ -18,19 +20,20 @@
 (defc input-error nil)
 (defc input-loading [])
 
-(defc cummulative-input-error {})
-
 (cell=
-  (do
-    (when-not (nil? (:data input-error))
-      (swap! ~(cell cummulative-input-error) merge (:data input-error)))
-    (swap! ~(cell cummulative-input-error) select-keys (map first last-10))))
+  (when-not (nil? (:data input-error))
+    (swap! ~(cell last-10)
+      #(mapv (fn [x]
+               (if (= (:invalid (:data input-error)) (:word x))
+                 (assoc x :invalid true)
+                 x)) %))
+    (reset! ~(cell input-error) nil)))
 
 (def submit-word
   (mkremote 'hoplon-tops.api/submit-word input-state input-error input-loading))
 
-(defn init []
+(defn init [interval]
   (get-state)
-  (js/setInterval get-state 1000))
+  (js/setInterval get-state interval))
 
-(init)
+(init 1000)
