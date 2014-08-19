@@ -1,6 +1,7 @@
 (page "index.html"
   (:require
     [hoplon-tops.rpc :as rpc]
+    [hoplon.twitter.bootstrap]
     [tailrecursion.hoplon.reload :refer [reload-all]]))
 
 (reload-all 2000)
@@ -8,24 +9,33 @@
 (defc user-input "")
 
 (html
-  (head)
+  (head
+    (meta :name "viewport" :content "width=device-width, initial-scale=1"))
   (body
-    (div
-      (h1 "Hoplon Tops")
-      (div
-        (input
-          :type "text"
-          :value user-input
-          :change #(reset! user-input @%))
-        (button
-          :click #(do
-                    (swap! rpc/last-10 (fn [x] (conj (vec (take-last 9 x)) {:word @user-input
-                                                                            :origin :local})))
-                    (rpc/submit-word @user-input)
-                    (reset! user-input "")) "Submit"))
-      (div
-        (loop-tpl :bindings [{:keys [word origin invalid]} (cell= (reverse rpc/last-10))]
-          (p :class (cell= {:local (= origin :local)
-                            :invalid invalid})
-            (text "~{word}"))))
-      (p (text "~{rpc/cummulative-input-error}")))))
+    (div :class "container-fluid"
+      (div :class "row"
+        (div :col {:lg 4 :md 5 :sm 6}
+          (h1 "Hoplon Tops")
+          (div :class "input-group"
+            (input
+              :class "form-control"
+              :type "text"
+              :value user-input
+              :change #(reset! user-input @%))
+            (span :class "input-group-btn"
+              (button
+                :class "btn btn-primary"
+                :click #(do
+                          (swap! rpc/last-10 (fn [x] (conj (vec (take-last 9 x)) {:word @user-input
+                                                                                  :origin :local})))
+                          (rpc/submit-word @user-input)
+                          (reset! user-input "")) "Submit")))
+          (ul :class "list-group"
+            (loop-tpl :bindings [{:keys [word origin invalid valid]} (cell= (reverse rpc/last-10))]
+              (li
+                :class (cell= {:list-group-item true
+                               :list-group-item-warning (and (= origin :local) (not invalid) (not valid))
+                               :list-group-item-success (and (= origin :local) valid)
+                               :invalid invalid
+                               :list-group-item-danger invalid})
+                (text "~{word}")))))))))

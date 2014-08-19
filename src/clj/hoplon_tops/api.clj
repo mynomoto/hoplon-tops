@@ -123,4 +123,4 @@
   (Thread/sleep 3000)
   (if (> (count w) 6)
     (throw (c/ex c/warning {:invalid w} "Validation error."))
-    :ok))
+    {:valid w}))

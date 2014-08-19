@@ -6,15 +6,18 @@
   :project      'hoplon-tops
   :version      "0.1.0-SNAPSHOT"
   :dependencies '[[tailrecursion/boot.task   "2.2.4"]
-                  [tailrecursion/hoplon      "5.10.22"]]
+                  [tailrecursion/hoplon      "5.10.22"]
+                  [io.hoplon.vendor/twitter.bootstrap.default "3.2.0-0"]
+                  [io.hoplon/twitter.bootstrap "0.2.0"]]
   :out-path     "resources/public"
   :src-paths    #{"src/hl" "src/cljs" "src/clj"})
 
 ;; Static resources (css, images, etc.):
 (add-sync! (get-env :out-path) #{"assets"})
 
-(require '[tailrecursion.hoplon.boot :refer :all]
-         '[tailrecursion.castra.task :as c])
+(require
+  '[tailrecursion.hoplon.boot :refer :all]
+  '[tailrecursion.castra.task :as c])
 
 (deftask dev
   "Build hoplon-tops for development."

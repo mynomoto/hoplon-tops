@@ -29,6 +29,15 @@
                  x)) %))
     (reset! ~(cell input-error) nil)))
 
+(cell=
+  (when-not (nil? input-state)
+    (swap! ~(cell last-10)
+      #(mapv (fn [x]
+               (if (= (:valid input-state) (:word x))
+                 (assoc x :valid true)
+                 x)) %))
+    (reset! ~(cell input-state) nil)))
+
 (def submit-word
   (mkremote 'hoplon-tops.api/submit-word input-state input-error input-loading))
 
