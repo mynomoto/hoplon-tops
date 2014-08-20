@@ -8,9 +8,13 @@
   :dependencies '[[tailrecursion/boot.task   "2.2.4"]
                   [tailrecursion/hoplon      "5.10.22"]
                   [io.hoplon.vendor/twitter.bootstrap.default "3.2.0-0"]
-                  [io.hoplon/twitter.bootstrap "0.2.0"]]
+                  [io.hoplon/twitter.bootstrap "0.2.0"]
+                  [com.cemerick/clojurescript.test "0.3.1"]
+                  [com.cemerick/double-check "0.5.7"]
+                  [prismatic/dommy "0.1.3"]]
   :out-path     "resources/public"
-  :src-paths    #{"src/hl" "src/cljs" "src/clj"})
+  :src-paths    #{"src/hl" "src/cljs" "src/clj"
+                  "test/cljs"})
 
 ;; Static resources (css, images, etc.):
 (add-sync! (get-env :out-path) #{"assets"})
