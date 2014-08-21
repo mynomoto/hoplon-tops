@@ -2,8 +2,8 @@
   (:require-macros
     [tailrecursion.javelin :refer [defc defc= cell=]])
   (:require
-   [tailrecursion.javelin :refer [cell]]
-   [tailrecursion.castra :refer [mkremote]]))
+    [tailrecursion.javelin :refer [cell]]
+    [tailrecursion.castra :refer [mkremote]]))
 
 (defc last-10 [])
 (defc= state (first (last last-10))

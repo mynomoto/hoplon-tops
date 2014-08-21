@@ -1,6 +1,6 @@
 (defproject hoplon-tops "0.1.0-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [org.clojure/clojurescript  "0.0-2234"]]
+                 [org.clojure/clojurescript  "0.0-2227"]]
 
   :plugins [[lein-cljsbuild "1.0.4-SNAPSHOT"]
             [com.cemerick/clojurescript.test "0.3.1"]]
