@@ -3,7 +3,8 @@
                  [org.clojure/clojurescript  "0.0-2227"]]
 
   :plugins [[lein-cljsbuild "1.0.4-SNAPSHOT"]
-            [com.cemerick/clojurescript.test "0.3.1"]]
+            [com.cemerick/clojurescript.test "0.3.1"]
+            [fsrun "0.1.2"]]
 
   :source-paths ["src/clj"]
 

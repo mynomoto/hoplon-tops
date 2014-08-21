@@ -33,14 +33,13 @@
 (deftask run-test
   []
   (with-pre-wrap
-    (Thread/sleep 500)
     (println (:out (sh "lein" "cljsbuild" "test")))))
 
 (deftask dev
   "Build hoplon-tops for development."
   []
   (comp (test-profile) (watch) (hoplon {:prerender false})
-    (run-test) (c/castra-dev-server 'hoplon-tops.api)))
+    (c/castra-dev-server 'hoplon-tops.api)))
 
 (deftask prod
   "Build hoplon-tops for production."
