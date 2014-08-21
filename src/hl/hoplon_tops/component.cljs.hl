@@ -1,0 +1,39 @@
+(ns hoplon-tops.component
+  (:require
+    [hoplon-tops.rpc :as rpc]
+    [clojure.string :as str]
+    [hoplon.twitter.bootstrap]))
+
+(defn word-view [w]
+  (cell-let [{:keys [word origin invalid valid]} w]
+    (li
+      :class (cell= {:list-group-item true
+                     :list-group-item-warning (and (= origin :local) (not invalid) (not valid))
+                     :list-group-item-success (and (= origin :local) valid)
+                     :invalid invalid
+                     :list-group-item-danger invalid})
+      (text "~{word}"))))
+
+(defn word-list [ws]
+  (ul :class "list-group"
+    (loop-tpl :bindings [word (cell= (reverse ws))]
+      (word-view word))))
+
+(defn input-form [ws]
+  (let [user-input (cell "")]
+    (div :class "input-group"
+      (input
+        :class "form-control"
+        :type "text"
+        :value user-input
+        :change #(reset! user-input @%))
+      (span :class "input-group-btn"
+        (button
+          :class "btn btn-primary"
+          :click #(when-not (str/blank? @user-input)
+                    (swap! ws
+                      (fn [x] (conj (vec (take-last 9 x)) {:word @user-input
+                                                           :origin :local})))
+                    (rpc/submit-word @user-input)
+                    (reset! user-input ""))
+          "Submit")))))

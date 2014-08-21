@@ -1,13 +1,11 @@
 (page "index.html"
   (:require
-    [clojure.string :as str]
     [hoplon-tops.rpc :as rpc]
+    [hoplon-tops.component :as c]
     [hoplon.twitter.bootstrap]
     [tailrecursion.hoplon.reload :refer [reload-all]]))
 
 (reload-all 2000)
-
-(defc user-input "")
 
 (html
   (head
@@ -17,28 +15,5 @@
       (div :class "row"
         (div :col {:lg 4 :md 5 :sm 6}
           (h1 "Hoplon Tops")
-          (div :class "input-group"
-            (input
-              :class "form-control"
-              :type "text"
-              :value user-input
-              :change #(reset! user-input @%))
-            (span :class "input-group-btn"
-              (button
-                :class "btn btn-primary"
-                :click #(when-not (str/blank? @user-input)
-                          (swap! rpc/last-10
-                            (fn [x] (conj (vec (take-last 9 x)) {:word @user-input
-                                                                 :origin :local})))
-                          (rpc/submit-word @user-input)
-                          (reset! user-input ""))
-                "Submit")))
-          (ul :class "list-group"
-            (loop-tpl :bindings [{:keys [word origin invalid valid]} (cell= (reverse rpc/last-10))]
-              (li
-                :class (cell= {:list-group-item true
-                               :list-group-item-warning (and (= origin :local) (not invalid) (not valid))
-                               :list-group-item-success (and (= origin :local) valid)
-                               :invalid invalid
-                               :list-group-item-danger invalid})
-                (text "~{word}")))))))))
+          (c/input-form rpc/last-10)
+          (c/word-list rpc/last-10))))))
