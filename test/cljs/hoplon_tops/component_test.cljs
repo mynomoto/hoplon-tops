@@ -70,6 +70,26 @@
         (is (dommy/has-class? el "invalid"))
         (done)) 0)))
 
+(deftest ^:async input-form
+  (let [w (last (gen/sample (gen/vector (gen/hash-map :word gen/string-ascii) 0 10)))
+        ws (cell (mapv #(assoc % :origin :server) w))
+        el (c/input-form ws)
+        in (.-firstChild el)
+        sp (aget (.-childNodes el) 1)
+        bt (.-firstChild sp)]
+    (js/setTimeout
+      (fn []
+        (is (dommy/has-class? el "input-group"))
+        (is (= 2 (.-childElementCount el)))
+        (is (dommy/has-class? in "form-control"))
+        (is (= "" (.-value in)))
+        (is (= 1 (.-childElementCount sp)))
+        (is (dommy/has-class? sp "input-group-btn"))
+        (is (dommy/has-class? bt "btn"))
+        (is (dommy/has-class? bt "btn-primary"))
+        (is (= (dommy/text bt) "Submit"))
+        (done)) 0)))
+
 (deftest ^:async word-list-test
   (let [w (last (gen/sample (gen/vector (gen/hash-map :word gen/string-ascii) 0 10)))
         ws (mapv #(assoc % :origin :server) w)
