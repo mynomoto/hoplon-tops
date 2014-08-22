@@ -4,7 +4,7 @@
     [clojure.string :as str]
     [hoplon.twitter.bootstrap]))
 
-(defn word-view [w]
+(defn word-item [w]
   (cell-let [{:keys [word origin invalid valid]} w]
     (li
       :class (cell= {:list-group-item true
@@ -17,9 +17,9 @@
 (defn word-list [ws]
   (ul :class "list-group"
     (loop-tpl :bindings [word (cell= (reverse ws))]
-      (word-view word))))
+      (word-item word))))
 
-(defn input-form [ws]
+(defn word-input [ws]
   (let [user-input (cell "")]
     (div :class "input-group"
       (input
@@ -37,3 +37,10 @@
                     (rpc/submit-word @user-input)
                     (reset! user-input ""))
           "Submit")))))
+
+(defn tops-component [ws]
+  (div :class "row"
+    (div :col {:lg 4 :md 5 :sm 6}
+      (h1 "Hoplon Tops")
+      (word-input ws)
+      (word-list ws))))

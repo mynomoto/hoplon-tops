@@ -13,8 +13,4 @@
     (meta :name "viewport" :content "width=device-width, initial-scale=1"))
   (body
     (div :class "container-fluid"
-      (div :class "row"
-        (div :col {:lg 4 :md 5 :sm 6}
-          (h1 "Hoplon Tops")
-          (c/input-form rpc/last-10)
-          (c/word-list rpc/last-10))))))
+      (c/tops-component rpc/last-10))))

@@ -18,9 +18,9 @@
 
 (def runs 100)
 
-(deftest ^:async server-word-view
+(deftest ^:async server-word-item
   (let [w (last (gen/sample (gen/hash-map :word gen/string-ascii)))
-        el (c/word-view (cell (assoc w :origin :server)))]
+        el (c/word-item (cell (assoc w :origin :server)))]
     (js/setTimeout
       (fn []
         (is (= (:word w) (dommy/text el)))
@@ -31,9 +31,9 @@
         (is (not (dommy/has-class? el "invalid")))
         (done)) 0)))
 
-(deftest ^:async local-word-view
+(deftest ^:async local-word-item
   (let [w (last (gen/sample (gen/hash-map :word gen/string-ascii)))
-        el (c/word-view (cell (assoc w :origin :local)))]
+        el (c/word-item (cell (assoc w :origin :local)))]
     (js/setTimeout
       (fn []
         (is (= (:word w) (dommy/text el)))
@@ -44,9 +44,9 @@
         (is (not (dommy/has-class? el "invalid")))
         (done)) 0)))
 
-(deftest ^:async local-word-view-valid
+(deftest ^:async local-word-item-valid
   (let [w (last (gen/sample (gen/hash-map :word gen/string-ascii)))
-        el (c/word-view (cell (assoc w :origin :local :valid true)))]
+        el (c/word-item (cell (assoc w :origin :local :valid true)))]
     (js/setTimeout
       (fn []
         (is (= (:word w) (dommy/text el)))
@@ -57,9 +57,9 @@
         (is (not (dommy/has-class? el "invalid")))
         (done)) 0)))
 
-(deftest ^:async local-word-view-invalid
+(deftest ^:async local-word-item-invalid
   (let [w (last (gen/sample (gen/hash-map :word gen/string-ascii)))
-        el (c/word-view (cell (assoc w :origin :local :invalid true)))]
+        el (c/word-item (cell (assoc w :origin :local :invalid true)))]
     (js/setTimeout
       (fn []
         (is (= (:word w) (dommy/text el)))
@@ -70,10 +70,10 @@
         (is (dommy/has-class? el "invalid"))
         (done)) 0)))
 
-(deftest ^:async input-form
+(deftest ^:async word-input
   (let [w (last (gen/sample (gen/vector (gen/hash-map :word gen/string-ascii) 0 10)))
         ws (cell (mapv #(assoc % :origin :server) w))
-        el (c/input-form ws)
+        el (c/word-input ws)
         in (.-firstChild el)
         sp (aget (.-childNodes el) 1)
         bt (.-firstChild sp)]
