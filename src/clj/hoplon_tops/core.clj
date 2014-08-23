@@ -1,44 +1,24 @@
-;; Copyright (c) Alan Dipert and Micha Niskin. All rights reserved.
-;; The use and distribution terms for this software are covered by the
-;; Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
-;; which can be found in the file epl-v10.html at the root of this distribution.
-;; By using this software in any fashion, you are agreeing to be bound by
-;; the terms of this license.
-;; You must not remove this notice, or any other, from this software.
-
 (ns hoplon-tops.core
   (:require
+    [ring.util.response               :refer [file-response]]
     [ring.adapter.jetty               :refer [run-jetty]]
-    [ring.middleware.resource         :refer [wrap-resource]]
+    [compojure.core                   :refer [defroutes GET POST]]
+    [compojure.route                  :refer [files]]
     [ring.middleware.session          :refer [wrap-session]]
     [ring.middleware.session.cookie   :refer [cookie-store]]
-    [ring.middleware.file             :refer [wrap-file]]
-    [ring.middleware.file-info        :refer [wrap-file-info]]
     [tailrecursion.castra.handler     :refer [castra]]))
 
-(def server (atom nil))
+(defn index []
+  (file-response "public/index.html" {:root "resources"}))
 
-(defn app [port public-path]
-  (->
-    (castra 'hoplon-tops.api)
-    (wrap-session {:store (cookie-store {:key "a 16-byte secret"})})
-    (wrap-file public-path)
-    (wrap-file-info)
-    (run-jetty {:join? false :port port})))
+(defroutes routes
+  (GET "/" [] (index))
+  (POST "/" [] (castra 'hoplon-tops.api))
+  (files "/" {:root "resources/public"}))
 
-(defn start-server
-  "Start castra demo server (port 33333)."
-  [port public-path]
-  (swap! server #(or % (app port public-path))))
+(def app
+  (-> routes
+      (wrap-session {:store (cookie-store {:key "a 16-byte secret"})})))
 
-(defn run-task
-  [port public-path]
-  (.mkdirs (java.io.File. public-path))
-  (start-server port public-path)
-  (fn [continue]
-    (fn [event]
-      (continue event))))
-
-(defn -main
-  "I don't do a whole lot."
-  [& args])
+(defonce server
+  (run-jetty #'app {:port 8000 :join? false}))
