@@ -68,6 +68,18 @@
         (is (dommy/has-class? el "invalid"))
         (done)) 0)))
 
+(deftest ^:async word-list-test
+  (let [w (last (gen/sample (gen/vector (gen/hash-map :word gen/string-ascii) 0 10)))
+        ws (mapv #(assoc % :origin :server) w)
+        el (c/word-list (cell ws))
+        _ (dommy/append! js/document.body el)]
+    (js/setTimeout
+      (fn []
+        (is (= (count w) (.-childElementCount el)))
+        (is (dommy/has-class? el "list-group"))
+        (is (= (str/join (map :word (reverse w))) (dommy/text el)))
+        (done)) 0)))
+
 (deftest ^:async word-input
   (let [w (last (gen/sample (gen/vector (gen/hash-map :word gen/string-ascii) 0 10)))
         ws (cell (mapv #(assoc % :origin :server) w))
@@ -88,15 +100,25 @@
         (is (= (dommy/text bt) "Submit"))
         (done)) 0)))
 
-(deftest ^:async word-list-test
+(deftest ^:async tops-component-test
   (let [w (last (gen/sample (gen/vector (gen/hash-map :word gen/string-ascii) 0 10)))
-        ws (mapv #(assoc % :origin :server) w)
-        body js/document.body
-        el (c/word-list (cell ws))
-        _ (dommy/append! body el)]
+        ws (cell (mapv #(assoc % :origin :server) w))
+        elp (c/tops-component ws)
+        _ (dommy/append! js/document.body elp)
+        elc (.-firstChild elp)
+        h (aget (.-childNodes elc) 0)
+        wl (aget (.-childNodes elc) 2)]
     (js/setTimeout
       (fn []
-        (is (dommy/has-class? el "list-group"))
-        (is (= (count w) (.-childElementCount el)))
-        (is (= (str/join (map :word (reverse w))) (dommy/text el)))
+        (is (= 1 (.-childElementCount elp)))
+        (is (= 3 (.-childElementCount elc)))
+        (is (= 3 (-> elc .-childNodes .-length)))
+        (is (dommy/has-class? elp "row"))
+        (is (dommy/has-class? elc "col-lg-4"))
+        (is (dommy/has-class? elc "col-md-5"))
+        (is (dommy/has-class? elc "col-sm-6"))
+        (is (= "Hoplon Tops" (dommy/text h)))
+        (is (= (count w) (.-childElementCount wl)))
+        (is (dommy/has-class? wl "list-group"))
+        (is (= (str/join (map :word (reverse w))) (dommy/text wl)))
         (done)) 0)))
