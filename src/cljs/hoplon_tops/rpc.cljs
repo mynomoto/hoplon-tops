@@ -5,16 +5,16 @@
     [tailrecursion.javelin :refer [cell]]
     [tailrecursion.castra :refer [mkremote]]))
 
-(defc last-10 [])
-(defc= state (first (last last-10))
-  (fn [x] (swap! last-10 #(conj (vec (take-last 9 %))
+(defc state [])
+(defc= last-word (first (last state))
+  (fn [x] (swap! state #(conj (vec (take-last 9 %))
                             {:word x
                              :origin :server}))))
 (defc error nil)
 (defc loading [])
 
 (def get-state
-  (mkremote 'hoplon-tops.api/rand-word state error loading))
+  (mkremote 'hoplon-tops.api/rand-word last-word error loading))
 
 (defc input-state nil)
 (defc input-error nil)
@@ -22,7 +22,7 @@
 
 (cell=
   (when-not (nil? (:data input-error))
-    (swap! ~(cell last-10)
+    (swap! ~(cell state)
       #(mapv (fn [x]
                (if (= (:invalid (:data input-error)) (:word x))
                  (assoc x :invalid true)
@@ -31,7 +31,7 @@
 
 (cell=
   (when-not (nil? input-state)
-    (swap! ~(cell last-10)
+    (swap! ~(cell state)
       #(mapv (fn [x]
                (if (= (:valid input-state) (:word x))
                  (assoc x :valid true)
