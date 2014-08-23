@@ -7,6 +7,7 @@
   :version      "0.1.0-SNAPSHOT"
   :dependencies '[[tailrecursion/boot.task   "2.2.4"]
                   [org.clojure/clojurescript  "0.0-2227"]
+;;                   [org.clojure/clojurescript  "0.0-2311"]
                   [tailrecursion/hoplon      "5.10.23"]
                   [io.hoplon.vendor/twitter.bootstrap.default "3.2.0-0"]
                   [io.hoplon/twitter.bootstrap "0.2.0"]]

@@ -16,8 +16,6 @@
     [dommy.utils :as utils]
     [dommy.core :as dommy]))
 
-(def runs 100)
-
 (deftest ^:async server-word-item
   (let [w (last (gen/sample (gen/hash-map :word gen/string-ascii)))
         el (c/word-item (cell (assoc w :origin :server)))]
