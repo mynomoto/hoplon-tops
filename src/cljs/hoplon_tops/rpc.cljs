@@ -5,13 +5,14 @@
     [tailrecursion.javelin :refer [cell]]
     [tailrecursion.castra :refer [mkremote]]))
 
+(defn add-word [ws o w]
+  (swap! ws #(conj (vec (take-last 9 %)) {:word w :origin o})))
+
 (defc state [])
-(defc= last-word (first (last state))
-  (fn [x] (swap! state #(conj (vec (take-last 9 %))
-                            {:word x
-                             :origin :server}))))
 (defc error nil)
 (defc loading [])
+
+(defc= last-word (first (last state)) (partial add-word state :server))
 
 (def get-state
   (mkremote 'hoplon-tops.api/rand-word last-word error loading))

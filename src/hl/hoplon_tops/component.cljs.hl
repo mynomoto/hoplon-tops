@@ -31,9 +31,7 @@
         (button
           :class "btn btn-primary"
           :click #(when-not (str/blank? @user-input)
-                    (swap! ws
-                      (fn [x] (conj (vec (take-last 9 x)) {:word @user-input
-                                                           :origin :local})))
+                    (rpc/add-word ws :local @user-input)
                     (rpc/submit-word @user-input)
                     (reset! user-input ""))
           "Submit")))))
