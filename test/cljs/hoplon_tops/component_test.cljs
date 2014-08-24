@@ -3,8 +3,7 @@
     [cemerick.cljs.test
      :refer [is deftest with-test run-tests testing test-var done]]
     [clojure.test.check.clojure-test :refer [defspec]]
-    [dommy.macros :refer [sel sel1 node]]
-    [tailrecursion.hoplon :refer [with-init!]])
+    [dommy.macros :refer [sel sel1 node]])
   (:require
     [cemerick.cljs.test :as t]
     [tailrecursion.javelin :refer [cell]]
