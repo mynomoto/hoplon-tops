@@ -1,6 +1,7 @@
 (ns hoplon-tops.core-test
   (:require-macros
     [purnam.test :refer [describe it is is-not runs waits-for]]
+    [tailrecursion.javelin :refer [defc]]
     [dommy.macros :refer [sel sel1 node]])
   (:require
     [purnam.test]
@@ -12,102 +13,70 @@
     [dommy.core :as dommy]
     [hoplon-tops.component :as c]))
 
-(describe
-  {:doc "Generative testing word-item"}
-  (it "Should add correct classes to server words"
-    (tc/quick-check 100
-      (prop/for-all [w (gen/hash-map :word gen/string-ascii)]
-        (let [el (c/word-item (cell (assoc w :origin :server)))]
-          (waits-for "Class must be set" 0 (dommy/has-class? el "list-group-item"))
-          (runs
-            (is (dommy/text el) (:word w))
-            (is (dommy/has-class? el "list-group-item") true)
-            (is (dommy/has-class? el "list-group-item-warning") false)
-            (is (dommy/has-class? el "list-group-item-success") false)
-            (is (dommy/has-class? el "list-group-item-danger") false)
-            (is (dommy/has-class? el "invalid") false))
-          true))))
-  (it "Should add correct classes to local words"
-    (tc/quick-check 100
-      (prop/for-all [w (gen/hash-map :word gen/string-ascii)]
-        (let [el (c/word-item (cell (assoc w :origin :local)))]
-          (waits-for "Class must be set" 0 (dommy/has-class? el "list-group-item"))
-          (runs
-            (is (dommy/text el) (:word w))
-            (is (dommy/has-class? el "list-group-item") true)
-            (is (dommy/has-class? el "list-group-item-warning") true)
-            (is (dommy/has-class? el "list-group-item-success") false)
-            (is (dommy/has-class? el "list-group-item-danger") false)
-            (is (dommy/has-class? el "invalid") false))
-          true))))
-  (it "Should add correct classes to local valid words"
-    (tc/quick-check 100
-      (prop/for-all [w (gen/hash-map :word gen/string-ascii)]
-        (let [el (c/word-item (cell (assoc w :origin :local :valid true)))]
-          (waits-for "Class must be set" 0 (dommy/has-class? el "list-group-item"))
-          (runs
-            (is (dommy/text el) (:word w))
-            (is (dommy/has-class? el "list-group-item") true)
-            (is (dommy/has-class? el "list-group-item-warning") false)
-            (is (dommy/has-class? el "list-group-item-success") true)
-            (is (dommy/has-class? el "list-group-item-danger") false)
-            (is (dommy/has-class? el "invalid") false))
-          true))))
-  (it "Should add correct classes to local invalid words"
-    (tc/quick-check 100
-      (prop/for-all [w (gen/hash-map :word gen/string-ascii)]
-        (let [el (c/word-item (cell (assoc w :origin :local :invalid true)))]
-          (waits-for "Class must be set" 0 (dommy/has-class? el "list-group-item"))
-          (runs
-            (is (dommy/text el) (:word w))
-            (is (dommy/has-class? el "list-group-item") true)
-            (is (dommy/has-class? el "list-group-item-warning") false)
-            (is (dommy/has-class? el "list-group-item-success") false)
-            (is (dommy/has-class? el "list-group-item-danger") true)
-            (is (dommy/has-class? el "invalid") true))
-          true)))))
+(defc c (cell nil))
+(def word-item (c/word-item c))
 
 (describe
-  {:doc  "Testing word-item"
-   :vars [w (last (gen/sample (gen/hash-map :word gen/string-ascii)))]}
+  {:doc "Generative testing word-item"
+   :globals [el word-item]}
   (it "Should add correct classes to server words"
-    (let [el (c/word-item (cell (assoc w :origin :server)))]
-      (waits-for "Class must be set" 0 (dommy/has-class? el "list-group-item"))
-      (runs
-        (is (dommy/text el) (:word w))
-        (is (dommy/has-class? el "list-group-item") true)
-        (is (dommy/has-class? el "list-group-item-warning") false)
-        (is (dommy/has-class? el "list-group-item-success") false)
-        (is (dommy/has-class? el "list-group-item-danger") false)
-        (is (dommy/has-class? el "invalid") false))))
+    (waits-for "Just a cycle" 0 true)
+    (runs
+      (is
+        (tc/quick-check 100
+          (prop/for-all [w (gen/hash-map :word gen/string-ascii)]
+            (let [_ (reset! c (assoc w :origin :server))]
+              (and
+                (= (dommy/text el) (:word w))
+                (dommy/has-class? el "list-group-item")
+                (not (dommy/has-class? el "list-group-item-warning"))
+                (not (dommy/has-class? el "list-group-item-success"))
+                (not (dommy/has-class? el "list-group-item-danger"))
+                (not (dommy/has-class? el "invalid"))))))
+        #(:result %))))
   (it "Should add correct classes to local words"
-    (let [el (c/word-item (cell (assoc w :origin :local)))]
-      (waits-for "Class must be set" 0 (dommy/has-class? el "list-group-item"))
-      (runs
-        (is (dommy/text el) (:word w))
-        (is (dommy/has-class? el "list-group-item") true)
-        (is (dommy/has-class? el "list-group-item-warning") true)
-        (is (dommy/has-class? el "list-group-item-success") false)
-        (is (dommy/has-class? el "list-group-item-danger") false)
-        (is (dommy/has-class? el "invalid") false))))
+    (waits-for "Just a cycle" 0 true)
+    (runs
+      (is
+        (tc/quick-check 100
+          (prop/for-all [w (gen/hash-map :word gen/string-ascii)]
+            (let [_ (reset! c (assoc w :origin :local))]
+              (and
+                (= (dommy/text el) (:word w))
+                (dommy/has-class? el "list-group-item")
+                (dommy/has-class? el "list-group-item-warning")
+                (not (dommy/has-class? el "list-group-item-success"))
+                (not (dommy/has-class? el "list-group-item-danger"))
+                (not (dommy/has-class? el "invalid"))))))
+        #(:result %))))
   (it "Should add correct classes to local valid words"
-    (let [el (c/word-item (cell (assoc w :origin :local :valid true)))]
-      (waits-for "Class must be set" 0 (dommy/has-class? el "list-group-item"))
-      (runs
-        (is (dommy/text el) (:word w))
-        (is (dommy/has-class? el "list-group-item") true)
-        (is (dommy/has-class? el "list-group-item-warning") false)
-        (is (dommy/has-class? el "list-group-item-success") true)
-        (is (dommy/has-class? el "list-group-item-danger") false)
-        (is (dommy/has-class? el "invalid") false))))
+    (waits-for "Just a cycle" 0 true)
+    (runs
+      (is
+        (tc/quick-check 100
+          (prop/for-all [w (gen/hash-map :word gen/string-ascii)]
+            (let [_ (reset! c (assoc w :origin :local :valid true))]
+              (and
+                (= (dommy/text el) (:word w))
+                (dommy/has-class? el "list-group-item")
+                (not (dommy/has-class? el "list-group-item-warning"))
+                (dommy/has-class? el "list-group-item-success")
+                (not (dommy/has-class? el "list-group-item-danger"))
+                (not (dommy/has-class? el "invalid"))))))
+        #(:result %))))
   (it "Should add correct classes to local invalid words"
-    (let [el (c/word-item (cell (assoc w :origin :local :invalid true)))]
-      (waits-for "Class must be set" 0 (dommy/has-class? el "list-group-item"))
-      (runs
-        (is (dommy/text el) (:word w))
-        (is (dommy/has-class? el "list-group-item") true)
-        (is (dommy/has-class? el "list-group-item-warning") false)
-        (is (dommy/has-class? el "list-group-item-success") false)
-        (is (dommy/has-class? el "list-group-item-danger") true)
-        (is (dommy/has-class? el "invalid") true)))))
+    (waits-for "Just a cycle" 0 true)
+    (runs
+      (is
+        (tc/quick-check 100
+          (prop/for-all [w (gen/hash-map :word gen/string-ascii)]
+            (let [_ (reset! c (assoc w :origin :local :invalid true))]
+              (and
+                (= (dommy/text el) (:word w))
+                (dommy/has-class? el "list-group-item")
+                (not (dommy/has-class? el "list-group-item-warning"))
+                (not (dommy/has-class? el "list-group-item-success"))
+                (dommy/has-class? el "list-group-item-danger")
+                (dommy/has-class? el "invalid")))))
+        #(:result %)))))
 
