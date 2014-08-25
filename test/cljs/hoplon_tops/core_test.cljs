@@ -11,6 +11,7 @@
     [tailrecursion.javelin :refer [cell]]
     [dommy.utils :as utils]
     [dommy.core :as dommy]
+    [hoplon-tops.rpc :as rpc]
     [hoplon-tops.component :as c]))
 
 (defc c (cell nil))
@@ -80,3 +81,31 @@
                 (dommy/has-class? el "invalid")))))
         #(:result %)))))
 
+(def tops-component (c/tops-component rpc/state))
+(reset! rpc/state [{:word "abcdef" :origin :server}])
+
+(describe
+  {:doc "Test whole component"
+   :globals [elp tops-component]}
+  (it "Should add new word to the list on button click"
+    (runs (dommy/append! js/document.body elp))
+    (waits-for "Rendering" 100 (dommy/has-class? (sel1 :li) "list-group-item"))
+    (runs
+      (let [elc (.-firstChild elp)
+            h (aget (.-childNodes elc) 0)
+            i (js/jQuery (sel1 :input))
+            b (js/jQuery (sel1 :button))
+            wl (sel1 :ul)]
+        (is (.-childElementCount elp) 1)
+        (is (.-childElementCount wl) 1)
+        (is (dommy/text (.-firstChild wl)) "abcdef")
+        (is (.val i) "")
+        (.focus i)
+        (.val i "blabla")
+        (is (.val i) "blabla")
+        (.change i)
+        (is (.text b) "Submit")
+        (.click b)
+        (is (.-childElementCount wl) 2)
+        (is (dommy/text (.-firstChild wl)) "blabla")
+        (is (dommy/has-class? (.-firstChild wl) "list-group-item") true)))))
