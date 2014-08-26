@@ -120,7 +120,7 @@
   (rand-nth words))
 
 (defrpc submit-word [w]
-  (Thread/sleep 3000)
+  (Thread/sleep 2000)
   (if (> (count w) 6)
     (throw (c/ex c/warning {:invalid w} "Validation error."))
     {:valid w}))
