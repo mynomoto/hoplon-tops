@@ -2,7 +2,7 @@
 
 A Hoplon project with Castra designed to show optmistic render on the client
 side while asynchronously calling the server for validation. This project
-also has tests using [purnam.test][5], which are runned on [Karma][6].
+also has tests using [purnam.test][5] and [double-check][7], which are runned on [Karma][6].
 
 The client pools the server each second for a random word and shows the last
 10 words. The user can submit new words, which will appear on the list
@@ -75,3 +75,4 @@ this license. You must not remove this notice, or any other, from this software.
 [4]: https://www.npmjs.org
 [5]: http://purnam.github.io/purnam.test
 [6]: https://karma-runner.github.io/0.12/index.html
+[7]: https://github.com/cemerick/double-check
