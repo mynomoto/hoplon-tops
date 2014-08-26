@@ -1,4 +1,4 @@
-(ns hoplon-tops.core-test
+(ns hoplon-tops.component-test
   (:require-macros
     [purnam.test :refer [describe it is is-not runs waits-for]]
     [tailrecursion.javelin :refer [defc]]
