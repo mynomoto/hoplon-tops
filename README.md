@@ -2,7 +2,8 @@
 
 A Hoplon project with Castra designed to show optmistic render on the client
 side while asynchronously calling the server for validation. This project
-also has tests using [purnam.test][5] and [double-check][7], which are runned on [Karma][6].
+also has tests using [purnam.test][5] and [double-check][7], which are run
+on [Karma][6].
 
 The client pools the server each second for a random word and shows the last
 10 words. The user can submit new words, which will appear on the list
